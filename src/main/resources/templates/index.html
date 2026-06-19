@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hr">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Server Evidencija</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav>
+    <a th:href="@{/}" class="brand">Server Evidencija</a>
+    <a th:href="@{/}">Početna</a>
+    <a th:href="@{/servers}">Serveri</a>
+</nav>
+
+<main>
+    <div th:if="${poruka}" class="poruka" th:text="${poruka}"></div>
+
+    <h1>Dobrodošli u evidenciju servera</h1>
+    <p>Aplikacija za praćenje servera i evidenciju održavanja.</p>
+
+    <div class="statistike">
+        <div class="stat-kartica">
+            <div class="broj" th:text="${brojServera}">0</div>
+            <div class="opis">Servera u evidenciji</div>
+        </div>
+        <div class="stat-kartica">
+            <div class="broj" th:text="${brojIntervencija}">0</div>
+            <div class="opis">Ukupno intervencija</div>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <a th:href="@{/servers}" class="btn btn-primary">Pregled servera</a>
+        <a th:href="@{/servers/new}" class="btn btn-success">+ Dodaj server</a>
+    </div>
+
+    <h2>Popis servera</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Naziv</th>
+                <th>IP adresa</th>
+                <th>OS</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="s : ${serveri}">
+                <td>
+                    <a th:href="@{/servers/{id}(id=${s.id})}" th:text="${s.naziv}"></a>
+                </td>
+                <td th:text="${s.ipAdresa}"></td>
+                <td th:text="${s.operativniSustav != null ? s.operativniSustav : '-'}"></td>
+                <td>
+                    <span th:if="${s.status != null}"
+                          th:text="${s.status}"
+                          th:classappend="'status status-' + ${s.status.toLowerCase()}">
+                    </span>
+                    <span th:if="${s.status == null}">-</span>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(serveri)}">
+                <td colspan="4" style="text-align: center; padding: 20px; color: #777;">
+                    Nema servera. <a th:href="@{/servers/new}">Dodaj prvi server</a>.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+
+<footer>
+    Server Evidencija &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span>
+</footer>
+
+</body>
+</html>

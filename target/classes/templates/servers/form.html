@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hr">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${server.id != null ? 'Uredi server' : 'Novi server'}">Forma</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav>
+    <a th:href="@{/}" class="brand">Server Evidencija</a>
+    <a th:href="@{/}">Početna</a>
+    <a th:href="@{/servers}">Serveri</a>
+</nav>
+
+<main>
+    <h1 th:text="${server.id != null ? 'Uredi server' : 'Dodaj novi server'}">Forma</h1>
+
+    <div class="forma-kartica">
+        <form th:action="${server.id != null ? '/servers/' + server.id + '/edit' : '/servers'}"
+              th:object="${server}"
+              method="post">
+
+            <div class="forma-grupa">
+                <label for="naziv">Naziv servera *</label>
+                <input type="text" id="naziv" th:field="*{naziv}" placeholder="npr. web-server-01"/>
+                <div class="greska" th:if="${#fields.hasErrors('naziv')}" th:errors="*{naziv}"></div>
+            </div>
+
+            <div class="forma-grupa">
+                <label for="ipAdresa">IP adresa *</label>
+                <input type="text" id="ipAdresa" th:field="*{ipAdresa}" placeholder="npr. 192.168.1.10"/>
+                <div class="greska" th:if="${#fields.hasErrors('ipAdresa')}" th:errors="*{ipAdresa}"></div>
+            </div>
+
+            <div class="forma-grupa">
+                <label for="operativniSustav">Operativni sustav</label>
+                <input type="text" id="operativniSustav" th:field="*{operativniSustav}" placeholder="npr. Ubuntu 22.04"/>
+            </div>
+
+            <div class="forma-grupa">
+                <label for="lokacija">Lokacija</label>
+                <input type="text" id="lokacija" th:field="*{lokacija}" placeholder="npr. Serverska soba A"/>
+            </div>
+
+            <div class="forma-grupa">
+                <label for="status">Status</label>
+                <select id="status" th:field="*{status}">
+                    <option value="">-- odaberi --</option>
+                    <option value="AKTIVAN">AKTIVAN</option>
+                    <option value="NEAKTIVAN">NEAKTIVAN</option>
+                    <option value="SERVIS">SERVIS</option>
+                </select>
+            </div>
+
+            <div class="forma-grupa">
+                <label for="napomena">Napomena</label>
+                <textarea id="napomena" th:field="*{napomena}" rows="3" placeholder="Dodatne napomene..."></textarea>
+            </div>
+
+            <div class="forma-akcije">
+                <button type="submit" class="btn btn-primary"
+                        th:text="${server.id != null ? 'Spremi promjene' : 'Dodaj server'}">
+                    Spremi
+                </button>
+                <a th:href="${server.id != null ? '/servers/' + server.id : '/servers'}"
+                   class="btn btn-secondary">Odustani</a>
+            </div>
+
+        </form>
+    </div>
+</main>
+
+<footer>
+    Server Evidencija &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span>
+</footer>
+
+</body>
+</html>

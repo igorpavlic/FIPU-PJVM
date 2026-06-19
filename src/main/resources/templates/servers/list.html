@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hr">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Serveri</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav>
+    <a th:href="@{/}" class="brand">Server Evidencija</a>
+    <a th:href="@{/}">Početna</a>
+    <a th:href="@{/servers}">Serveri</a>
+</nav>
+
+<main>
+    <div th:if="${poruka}" class="poruka" th:text="${poruka}"></div>
+
+    <div class="page-header">
+        <h1>Popis servera</h1>
+        <a th:href="@{/servers/new}" class="btn btn-success">+ Dodaj server</a>
+    </div>
+
+    <!-- pretraga -->
+    <form th:action="@{/servers}" method="get" class="traka">
+        <input type="text" name="query" th:value="${query}" placeholder="Pretraži po nazivu, IP-u ili OS-u..."/>
+        <button type="submit" class="btn btn-primary">Traži</button>
+        <a th:if="${query != null and !#strings.isEmpty(query)}"
+           th:href="@{/servers}"
+           class="btn btn-secondary">Poništi</a>
+    </form>
+
+    <p th:if="${query != null and !#strings.isEmpty(query)}" style="color: #777; font-size: 14px;">
+        Rezultati za: "<span th:text="${query}"></span>" —
+        <span th:text="${serveri.size()}"></span> pronađeno
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Naziv</th>
+                <th>IP adresa</th>
+                <th>Operativni sustav</th>
+                <th>Lokacija</th>
+                <th>Status</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="s : ${serveri}">
+                <td>
+                    <a th:href="@{/servers/{id}(id=${s.id})}" th:text="${s.naziv}"></a>
+                </td>
+                <td th:text="${s.ipAdresa}"></td>
+                <td th:text="${s.operativniSustav != null ? s.operativniSustav : '-'}"></td>
+                <td th:text="${s.lokacija != null ? s.lokacija : '-'}"></td>
+                <td>
+                    <span th:if="${s.status != null}"
+                          th:text="${s.status}"
+                          th:classappend="'status status-' + ${s.status.toLowerCase()}">
+                    </span>
+                    <span th:if="${s.status == null}">-</span>
+                </td>
+                <td>
+                    <a th:href="@{/servers/{id}(id=${s.id})}" class="btn btn-secondary">Detalji</a>
+                    <a th:href="@{/servers/{id}/edit(id=${s.id})}" class="btn btn-primary">Uredi</a>
+                    <a th:href="@{/servers/{id}/delete(id=${s.id})}" class="btn btn-danger">Briši</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(serveri)}">
+                <td colspan="6" style="text-align: center; padding: 20px; color: #777;">
+                    Nema pronađenih servera.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+
+<footer>
+    Server Evidencija &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span>
+</footer>
+
+</body>
+</html>
