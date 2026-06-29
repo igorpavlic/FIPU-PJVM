@@ -1,0 +1,9 @@
+PROJEKT: Server Evidencija - web aplikacija za evidenciju servera i odrzavanja
+KOLEGIJ: Programiranje na Java virtualnom stroju - FIPU
+AUTOR: Igor Pavlic
+
+Git repozitorij:
+https://github.com/igorpavlic/FIPU-PJVM
+
+Video prezentacija/demonstracija:
+
