@@ -102,6 +102,90 @@
             </tr>
         </tbody>
     </table>
+
+    <!-- graf intervencija po mjesecima -->
+    <div th:if="${!#lists.isEmpty(intervencije)}" style="margin-top: 30px;">
+        <h2>Intervencije po mjesecima</h2>
+        <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
+            <canvas id="grafIntervencija" height="100"></canvas>
+        </div>
+    </div>
+
+    <script th:src="@{/js/chart.js}"></script>
+    <script th:inline="javascript">
+        var datumi = [[${datumi}]];
+        var tipovi = [[${tipovi}]];
+
+        // skupi sve mjesece i broji po tipu
+        var podaci = {};  // npr. { "2025-01": {PREVENTIVNO: 2, KOREKTIVNO: 1, HITNO: 0} }
+
+        for (var i = 0; i < datumi.length; i++) {
+            var dijelovi = datumi[i].split('-');
+            var mjesec = dijelovi[0] + '-' + dijelovi[1];
+            var tip = tipovi[i];
+
+            if (!podaci[mjesec]) {
+                podaci[mjesec] = { PREVENTIVNO: 0, KOREKTIVNO: 0, HITNO: 0, OSTALO: 0 };
+            }
+            if (podaci[mjesec][tip] !== undefined) {
+                podaci[mjesec][tip]++;
+            } else {
+                podaci[mjesec].OSTALO++;
+            }
+        }
+
+        // sortirani mjeseci
+        var oznake = Object.keys(podaci).sort();
+
+        // tri niza vrijednosti, po jedan za svaki tip
+        var preventivno = [];
+        var korektivno = [];
+        var hitno = [];
+        for (var j = 0; j < oznake.length; j++) {
+            preventivno.push(podaci[oznake[j]].PREVENTIVNO);
+            korektivno.push(podaci[oznake[j]].KOREKTIVNO);
+            hitno.push(podaci[oznake[j]].HITNO);
+        }
+
+        if (document.getElementById('grafIntervencija')) {
+            var ctx = document.getElementById('grafIntervencija').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: oznake,
+                    datasets: [
+                        {
+                            label: 'Preventivno',
+                            data: preventivno,
+                            backgroundColor: '#3498db'
+                        },
+                        {
+                            label: 'Korektivno',
+                            data: korektivno,
+                            backgroundColor: '#f39c12'
+                        },
+                        {
+                            label: 'Hitno',
+                            data: hitno,
+                            backgroundColor: '#e74c3c'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { stacked: true },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
 </main>
 
 <footer>

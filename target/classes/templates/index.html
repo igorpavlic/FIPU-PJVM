@@ -24,10 +24,10 @@
             <div class="broj" th:text="${brojServera}">0</div>
             <div class="opis">Servera u evidenciji</div>
         </div>
-        <div class="stat-kartica">
+        <a th:href="@{/statistika}" class="stat-kartica" style="text-decoration: none; cursor: pointer;">
             <div class="broj" th:text="${brojIntervencija}">0</div>
-            <div class="opis">Ukupno intervencija</div>
-        </div>
+            <div class="opis">Ukupno intervencija →</div>
+        </a>
     </div>
 
     <div style="margin-bottom: 20px;">

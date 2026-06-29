@@ -18,7 +18,10 @@
 
     <div class="page-header">
         <h1>Popis servera</h1>
-        <a th:href="@{/servers/new}" class="btn btn-success">+ Dodaj server</a>
+        <div>
+            <a th:href="@{/servers/new}" class="btn btn-success">+ Dodaj server</a>
+            <a th:href="@{/servers/export}" class="btn btn-secondary">Export CSV</a>
+        </div>
     </div>
 
     <!-- pretraga -->

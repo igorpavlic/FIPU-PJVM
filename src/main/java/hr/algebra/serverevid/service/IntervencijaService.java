@@ -19,6 +19,11 @@ public class IntervencijaService {
         return intervencijaRepository.findByServerIdOrderByDatumDesc(serverId);
     }
 
+    // sve intervencije (za ukupni graf)
+    public List<Intervencija> dohvatiSve() {
+        return intervencijaRepository.findAll();
+    }
+
     // dohvati jednu intervenciju
     public Optional<Intervencija> dohvatiPoId(Long id) {
         return intervencijaRepository.findById(id);

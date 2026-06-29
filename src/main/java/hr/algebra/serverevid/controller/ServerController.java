@@ -1,5 +1,6 @@
 package hr.algebra.serverevid.controller;
 
+import hr.algebra.serverevid.model.Intervencija;
 import hr.algebra.serverevid.model.Server;
 import hr.algebra.serverevid.service.IntervencijaService;
 import hr.algebra.serverevid.service.ServerService;
@@ -11,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -52,8 +54,20 @@ public class ServerController {
             return "redirect:/servers";
         }
 
+        List<Intervencija> intervencije = intervencijaService.dohvatiZaServer(id);
+
+        // datumi i tipovi kao paralelne liste za Chart.js graf
+        List<String> datumi = new ArrayList<>();
+        List<String> tipovi = new ArrayList<>();
+        for (Intervencija i : intervencije) {
+            datumi.add(i.getDatum().toString());
+            tipovi.add(i.getTip() != null ? i.getTip() : "OSTALO");
+        }
+
         model.addAttribute("server", server);
-        model.addAttribute("intervencije", intervencijaService.dohvatiZaServer(id));
+        model.addAttribute("intervencije", intervencije);
+        model.addAttribute("datumi", datumi);
+        model.addAttribute("tipovi", tipovi);
         return "servers/detail";
     }
 
@@ -105,7 +119,7 @@ public class ServerController {
 
         server.setId(id);
         serverService.spremi(server);
-        redirectAttributes.addFlashAttribute("poruka", "Server uspješno ažuriran!");
+        redirectAttributes.addFlashAttribute("poruka", "Server uspješno azuriran!");
         return "redirect:/servers/" + id;
     }
 
@@ -129,5 +143,25 @@ public class ServerController {
         serverService.obrisi(id);
         redirectAttributes.addFlashAttribute("poruka", "Server obrisan.");
         return "redirect:/servers";
+    }
+
+    // export svih servera u CSV
+    @GetMapping("/export")
+    @ResponseBody
+    public String exportCsv() {
+        List<Server> serveri = serverService.dohvatiSve();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Naziv,IP adresa,Operativni sustav,Lokacija,Status\n");
+
+        for (Server s : serveri) {
+            sb.append(s.getNaziv()).append(",");
+            sb.append(s.getIpAdresa()).append(",");
+            sb.append(s.getOperativniSustav() != null ? s.getOperativniSustav() : "").append(",");
+            sb.append(s.getLokacija() != null ? s.getLokacija() : "").append(",");
+            sb.append(s.getStatus() != null ? s.getStatus() : "").append("\n");
+        }
+
+        return sb.toString();
     }
 }

@@ -28,7 +28,8 @@
 
             <div class="forma-grupa">
                 <label for="datum">Datum *</label>
-                <input type="date" id="datum" th:field="*{datum}"/>
+                <input type="date" id="datum" th:field="*{datum}"
+                       th:value="${intervencija.datum != null ? intervencija.datum : #temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"/>
                 <div class="greska" th:if="${#fields.hasErrors('datum')}" th:errors="*{datum}"></div>
             </div>
 

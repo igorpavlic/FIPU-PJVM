@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hr">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Statistika intervencija</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav>
+    <a th:href="@{/}" class="brand">Server Evidencija</a>
+    <a th:href="@{/}">Početna</a>
+    <a th:href="@{/servers}">Serveri</a>
+</nav>
+
+<main>
+    <div class="page-header">
+        <h1>Statistika svih intervencija</h1>
+        <a th:href="@{/}" class="btn btn-secondary">← Natrag</a>
+    </div>
+
+    <!-- kartice po tipu -->
+    <div class="statistike">
+        <div class="stat-kartica">
+            <div class="broj" th:text="${brojIntervencija}">0</div>
+            <div class="opis">Ukupno intervencija</div>
+        </div>
+        <div class="stat-kartica">
+            <div class="broj" style="color: #27ae60;" th:text="${ukupnoSati} + ' h'">0 h</div>
+            <div class="opis">Ukupno sati održavanja</div>
+        </div>
+        <div class="stat-kartica">
+            <div class="broj" style="color: #004085;" th:text="${brPreventivno}">0</div>
+            <div class="opis">Preventivno</div>
+        </div>
+        <div class="stat-kartica">
+            <div class="broj" style="color: #856404;" th:text="${brKorektivno}">0</div>
+            <div class="opis">Korektivno</div>
+        </div>
+        <div class="stat-kartica">
+            <div class="broj" style="color: #721c24;" th:text="${brHitno}">0</div>
+            <div class="opis">Hitno</div>
+        </div>
+    </div>
+
+    <!-- Top 5 servera -->
+    <h2>Top 5 servera po broju intervencija</h2>
+    <table style="margin-bottom: 30px;">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Naziv servera</th>
+                <th>Broj intervencija</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ts, iter : ${top5}">
+                <td th:text="${iter.count}">1</td>
+                <td>
+                    <a th:href="@{/servers/{id}(id=${ts.id})}" th:text="${ts.naziv}">server</a>
+                </td>
+                <td th:text="${ts.broj}">0</td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(top5)}">
+                <td colspan="3" style="text-align: center; padding: 20px; color: #777;">
+                    Nema podataka.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- graf po mjesecima -->
+    <h2>Sve intervencije po mjesecima</h2>
+    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); margin-bottom: 30px;">
+        <canvas id="grafMjeseci" height="80"></canvas>
+    </div>
+
+    <!-- graf po tipu -->
+    <h2>Intervencije po tipu</h2>
+    <div style="background: white; padding: 20px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); max-width: 400px;">
+        <canvas id="grafTipovi"></canvas>
+    </div>
+
+    <script th:src="@{/js/chart.js}"></script>
+    <script th:inline="javascript">
+        var datumi = [[${datumi}]];
+
+        // grupiranje po mjesecima
+        var brojevi = {};
+        for (var i = 0; i < datumi.length; i++) {
+            var dijelovi = datumi[i].split('-');
+            var kljuc = dijelovi[0] + '-' + dijelovi[1];
+            if (brojevi[kljuc]) {
+                brojevi[kljuc]++;
+            } else {
+                brojevi[kljuc] = 1;
+            }
+        }
+
+        var oznake = Object.keys(brojevi).sort();
+        var vrijednosti = [];
+        for (var j = 0; j < oznake.length; j++) {
+            vrijednosti.push(brojevi[oznake[j]]);
+        }
+
+        // graf po mjesecima (stupcasti)
+        var ctx1 = document.getElementById('grafMjeseci').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: oznake,
+                datasets: [{
+                    label: 'Broj intervencija',
+                    data: vrijednosti,
+                    backgroundColor: '#3498db'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+
+        // graf po tipu (pita)
+        var preventivno = [[${brPreventivno}]];
+        var korektivno = [[${brKorektivno}]];
+        var hitno = [[${brHitno}]];
+
+        var ctx2 = document.getElementById('grafTipovi').getContext('2d');
+        new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: ['Preventivno', 'Korektivno', 'Hitno'],
+                datasets: [{
+                    data: [preventivno, korektivno, hitno],
+                    backgroundColor: ['#3498db', '#f39c12', '#e74c3c']
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    </script>
+</main>
+
+<footer>
+    Server Evidencija &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span>
+</footer>
+
+</body>
+</html>
