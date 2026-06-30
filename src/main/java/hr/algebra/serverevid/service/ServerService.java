@@ -37,9 +37,12 @@ public class ServerService {
         serverRepository.save(server);
     }
 
-    // obrisi server
+    // obrisi server (ucitamo objekt pa brisemo da kaskada obrise i intervencije)
     public void obrisi(Long id) {
-        serverRepository.deleteById(id);
+        Server server = serverRepository.findById(id).orElse(null);
+        if (server != null) {
+            serverRepository.delete(server);
+        }
     }
 
     // ukupan broj servera (za pocetnu stranicu)
