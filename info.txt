@@ -6,4 +6,5 @@ Git repozitorij:
 https://github.com/igorpavlic/FIPU-PJVM
 
 Video prezentacija/demonstracija:
+https://youtu.be/b48inIeBD7U
 
