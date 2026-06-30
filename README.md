@@ -41,9 +41,7 @@ spring.datasource.password=tvoja_lozinka
 
 3. Pokreni aplikaciju:
 
-```bash
-mvn spring-boot:run
-```
+- Otvori klasu ServerEvidApplication.java (onu s @SpringBootApplication) i klikni zelenu strelicu.
 
 4. Otvori u browseru: <http://localhost:8080>
 
